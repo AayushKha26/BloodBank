@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BloodCare</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #fdf6f0; }
+        .admin-header {
+            background: linear-gradient(135deg, rgba(15, 3, 6, 0.98), rgba(192, 0, 26, 0.98));
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .admin-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 900;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.2); }
+        .admin-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .admin-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(192, 0, 26, 0.1);
+        }
+        .admin-card h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--blood);
+            margin-bottom: 20px;
+            font-size: 22px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #fafafa;
+            color: #666;
+            font-weight: 600;
+        }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-approved { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+        
+        .action-btn {
+            padding: 4px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            margin-right: 5px;
+        }
+        .btn-approve { background: #28a745; }
+        .btn-reject { background: #dc3545; }
+        .table-responsive { overflow-x: auto; max-height: 400px; }
+        
+        /* The Stock Form inside Admin */
+        .stock-form { background: #fafafa; padding: 20px; border-radius: 12px; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-header">
+        <div class="admin-logo">🩸 BloodCare | Admin Center</div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="admin-container">
+        
+        <!-- Stock Management (Moved from Public) -->
+        <div class="admin-card" style="margin-bottom: 30px;">
+            <h3>Update Blood Stock</h3>
+            <form class="bbform stock-form" onsubmit="submitForm(event, this, 'Stock updated!', '/api/stock')">
+                <div class="form-row">
+                    <div class="form-group"><label>Blood Group</label><select name="blood_group" required><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+                    <div class="form-group"><label>Units (Adds to stock)</label><input type="number" name="units" placeholder="e.g. 5" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Expiry Date</label><input type="date" name="expiry_date" required></div>
+                    <div class="form-group"><label>Issued To (Hospital ID)</label><input type="number" name="issued_to" placeholder="1 (Optional)" min="1"></div>
+                </div>
+                <button type="submit" class="btn-primary" style="width: auto; padding: 12px 30px;">Save Stock Update</button>
+            </form>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Requests Table -->
+            <div class="admin-card">
+                <h3>Hospital Blood Requests</h3>
+                <div class="table-responsive">
+                    <table id="requestsTable">
+                        <thead>
+                            <tr>
+                                <th>Hosp ID</th>
+                                <th>Group</th>
+                                <th>Units</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populated via JS -->
+                            <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Donors Table -->
+            <div class="admin-card">
+                <h3>Registered Donors</h3>
+                <div class="table-responsive">
+                    <table id="donorsTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Group</th>
+                                <th>Phone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populated via JS -->
+                            <tr><td colspan="3" style="text-align:center;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Security Check
+        if (!localStorage.getItem('adminToken')) {
+            window.location.href = 'admin-login.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = 'admin-login.html';
+        }
+
+        // Fetch Data
+        async function loadAdminData() {
+            try {
+                // Fetch Donors
+                const dRes = await fetch('/api/admin/donors', { headers: { 'Authorization': localStorage.getItem('adminToken') }});
+                if(dRes.status === 401) logout();
+                const donors = await dRes.json();
+                
+                const dBody = document.querySelector('#donorsTable tbody');
+                dBody.innerHTML = '';
+                donors.forEach(d => {
+                    dBody.innerHTML += `<tr>
+                        <td data-label="Name">${d.name}</td>
+                        <td data-label="Group"><strong>${d.blood_group}</strong></td>
+                        <td data-label="Phone">${d.phone}</td>
+                    </tr>`;
+                });
+
+                // Fetch Requests
+                const rRes = await fetch('/api/admin/requests', { headers: { 'Authorization': localStorage.getItem('adminToken') }});
+                const requests = await rRes.json();
+                
+                const rBody = document.querySelector('#requestsTable tbody');
+                rBody.innerHTML = '';
+                requests.forEach(r => {
+                    let stClass = r.status.toLowerCase() === 'pending' ? 'status-pending' : (r.status.toLowerCase() === 'approved' ? 'status-approved' : 'status-rejected');
+                    let actions = r.status.toLowerCase() === 'pending' ? 
+                        `<button class="action-btn btn-approve" onclick="updateReq(${r.request_id}, 'Approved')">✔</button>
+                         <button class="action-btn btn-reject" onclick="updateReq(${r.request_id}, 'Rejected')">✖</button>` 
+                        : '—';
+
+                    rBody.innerHTML += `<tr>
+                        <td data-label="Hosp ID">HSP-${r.hospital_id}</td>
+                        <td data-label="Group"><strong>${r.blood_group}</strong></td>
+                        <td data-label="Units">${r.units_required}</td>
+                        <td data-label="Status"><span class="status-badge ${stClass}">${r.status}</span></td>
+                        <td data-label="Action">${actions}</td>
+                    </tr>`;
+                });
+
+            } catch(e) {
+                showToast('Error loading data', true);
+            }
+        }
+
+        async function updateReq(id, status) {
+            try {
+                const res = await fetch(`/api/admin/requests/${id}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': localStorage.getItem('adminToken')
+                    },
+                    body: JSON.stringify({ status })
+                });
+                if(res.ok) {
+                    showToast(`Request ${status}`);
+                    loadAdminData(); // refresh
+                }
+            } catch(e) {
+                showToast('Action failed', true);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAdminData);
+    </script>
+</body>
+</html>

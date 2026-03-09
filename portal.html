@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portal - BloodCare</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👤</text></svg>">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #f4f6fa; font-family: 'DM Sans', sans-serif;}
+        .portal-header {
+            background: linear-gradient(135deg, #1d2671, #c33764);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .portal-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 900;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+        .portal-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 0 20px;
+            display: none; /* hidden until auth finishes loading */
+        }
+        
+        /* Donor Card Styling */
+        .digital-card {
+            background: linear-gradient(135deg, #e52d27, #b31217);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            box-shadow: 0 20px 40px rgba(229, 45, 39, 0.3);
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-bg {
+            position: absolute;
+            right: -20px;
+            bottom: -30px;
+            font-size: 150px;
+            opacity: 0.1;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .blood-group-badge {
+            background: white;
+            color: #e52d27;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 28px;
+            font-weight: 900;
+            font-family: 'Playfair Display', serif;
+        }
+        .card-detail {
+            margin-bottom: 15px;
+        }
+        .card-detail label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+        .card-detail p {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Hospital Table Styling */
+        .hosp-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .hosp-card h2 {
+            font-family: 'Playfair Display', serif;
+            color: #1d2671;
+            margin-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+            margin-top: 25px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th { background: #fafafa; color: #555; }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-approved { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+    <div class="portal-header">
+        <div class="portal-logo">🩸 BloodCare Portal</div>
+        <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+
+    <!-- VIEW: DONOR -->
+    <div class="portal-container" id="donorView">
+        <h2 style="text-align:center; color: #333; margin-bottom: 40px; font-family: 'Playfair Display', serif;">Welcome Back, Hero.</h2>
+        
+        <div class="digital-card">
+            <div class="card-bg">🩸</div>
+            <div class="card-header">
+                <div>
+                    <div style="font-size: 14px; opacity: 0.9; letter-spacing: 1px;">OFFICIAL BLOODCARE</div>
+                    <div style="font-size: 20px; font-weight: 600;">Registered Donor</div>
+                </div>
+                <div class="blood-group-badge" id="donorGroup">--</div>
+            </div>
+            <div class="card-detail">
+                <label>Donor Name</label>
+                <p id="donorName">Loading...</p>
+            </div>
+            <div class="card-detail">
+                <label>Contact Number</label>
+                <p id="donorPhone">--</p>
+            </div>
+            <div class="card-detail">
+                <label>Last Donation Date</label>
+                <p id="donorDate">--</p>
+            </div>
+        </div>
+        <p style="text-align:center; margin-top:30px; color:#666;">Thank you for your life-saving contribution to the community.</p>
+    </div>
+
+    <!-- VIEW: HOSPITAL -->
+    <div class="portal-container" id="hospitalView">
+        <div class="hosp-card">
+            <h2 id="hospName">Hospital Portal</h2>
+            <p style="color:#666; margin:0;">Track your blood request history and live approval status.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date Requested</th>
+                        <th>Required Group</th>
+                        <th>Units</th>
+                        <th>Live Status</th>
+                    </tr>
+                </thead>
+                <tbody id="hospRequestsBody">
+                    <tr><td colspan="4" style="text-align:center;">Loading requests...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('userToken');
+        if (!token) window.location.href = 'portal-login.html';
+
+        function logout() {
+            localStorage.removeItem('userToken');
+            window.location.href = 'portal-login.html';
+        }
+
+        async function loadPortal() {
+            if (token.startsWith('donor-')) {
+                document.getElementById('donorView').style.display = 'block';
+                try {
+                    const res = await fetch('/api/portal/donor/me', { headers: { 'Authorization': token }});
+                    if (res.status === 401) logout();
+                    const data = await res.json();
+                    
+                    document.getElementById('donorName').textContent = data.name || '--';
+                    document.getElementById('donorGroup').textContent = data.blood_group || '--';
+                    document.getElementById('donorPhone').textContent = data.phone || '--';
+                    document.getElementById('donorDate').textContent = data.last_donation_date ? new Date(data.last_donation_date).toLocaleDateString() : 'No recorded donations';
+                } catch(e) { console.error('Failed to load donor data'); }
+
+            } else if (token.startsWith('hospital-')) {
+                document.getElementById('hospitalView').style.display = 'block';
+                try {
+                    const res = await fetch('/api/portal/hospital/requests', { headers: { 'Authorization': token }});
+                    if (res.status === 401) logout();
+                    const data = await res.json();
+                    
+                    document.getElementById('hospName').textContent = data.hospitalName || 'Hospital Tracker';
+                    const tbody = document.getElementById('hospRequestsBody');
+                    tbody.innerHTML = '';
+
+                    if(data.requests.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No blood requests found.</td></tr>';
+                        return;
+                    }
+
+                    data.requests.forEach(r => {
+                        let stClass = r.status.toLowerCase() === 'pending' ? 'status-pending' : (r.status.toLowerCase() === 'approved' ? 'status-approved' : 'status-rejected');
+                        let dateJoined = new Date(r.request_date).toLocaleDateString();
+                        tbody.innerHTML += `<tr>
+                            <td data-label="Date Requested">${dateJoined}</td>
+                            <td data-label="Required Group"><strong>${r.blood_group}</strong></td>
+                            <td data-label="Units">${r.units_required}</td>
+                            <td data-label="Live Status"><span class="status-badge ${stClass}">${r.status}</span></td>
+                        </tr>`;
+                    });
+
+                } catch(e) { console.error('Failed to load hospital data'); }
+            } else {
+                logout(); // corrupted token type
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPortal);
+    </script>
+</body>
+</html>

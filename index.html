@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloodCare — Blood Bank Management System</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🩸</text></svg>">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="scrollProgress"></div>
+
+    <header id="mainHeader">
+        <div class="logo">🩸 BloodCare</div>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#services">Services</a>
+            <a href="#donor-form">Donate</a>
+            <a href="#request-form">Request</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <div style="display: flex; gap: 10px;">
+            <a href="portal-login.html" class="header-btn" style="background: transparent; border: 1px solid var(--blood); color: var(--blood); text-decoration: none; padding: 10px 24px; display: inline-block; text-align: center;">Login</a>
+            <button class="header-btn" onclick="openModal('donorModal')">Register Donor</button>
+        </div>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Donate Blood,<br><em>Save Lives</em></h1>
+            <p>Smart Blood Bank Management System — connecting donors, hospitals, and blood stock in real time.</p>
+            <div class="hero-btns">
+                <button class="btn-primary" onclick="scrollToSection('donor-form')">Become a Donor</button>
+                <button class="btn-outline" onclick="scrollToSection('request-form')">Request Blood</button>
+            </div>
+            <div class="hero-stats">
+                <div class="stat"><span>12,400+</span><small>Donors</small></div>
+                <div class="stat"><span>8,200+</span><small>Lives Saved</small></div>
+                <div class="stat"><span>340+</span><small>Hospitals</small></div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring r2"></div>
+            <div class="blood-drop">🩸</div>
+        </div>
+    </section>
+
+    <section id="about" class="section">
+        <div class="container">
+            <div class="section-label">About Us</div>
+            <h2>Complete Blood Bank<br>Management Platform</h2>
+            <p class="section-sub">Our system manages donor records, blood stock, hospital requests, and safe blood distribution with full traceability.</p>
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">🩸</div>
+                    <h3>Donor Management</h3>
+                    <p>Register and manage donors with complete profiles, donation history and eligibility tracking.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🏥</div>
+                    <h3>Hospital Requests</h3>
+                    <p>Hospitals can raise blood requests with blood group, units, and urgency status in real time.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h3>Blood Stock Tracking</h3>
+                    <p>Monitor available units per blood group with expiry date tracking and alerts.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">👨‍⚕️</div>
+                    <h3>Staff Control</h3>
+                    <p>Staff can issue blood stock to hospitals and manage donation records end-to-end.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="section dark-section">
+        <div class="container">
+            <div class="section-label">Availability</div>
+            <h2>Blood Groups in Stock</h2>
+            <p class="section-sub">Real-time status of all 8 blood types across our network.</p>
+            <div class="blood-groups">
+                <div class="blood" data-group="A+"><span>A+</span><small>Loading...</small></div>
+                <div class="blood" data-group="A-"><span>A-</span><small>Loading...</small></div>
+                <div class="blood" data-group="B+"><span>B+</span><small>Loading...</small></div>
+                <div class="blood" data-group="B-"><span>B-</span><small>Loading...</small></div>
+                <div class="blood" data-group="O+"><span>O+</span><small>Loading...</small></div>
+                <div class="blood" data-group="O-"><span>O-</span><small>Loading...</small></div>
+                <div class="blood" data-group="AB+"><span>AB+</span><small>Loading...</small></div>
+                <div class="blood" data-group="AB-"><span>AB-</span><small>Loading...</small></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DONOR REGISTRATION -->
+    <section id="donor-form" class="section form-section">
+        <div class="container narrow">
+            <div class="section-label">Register</div>
+            <h2>Donor Registration</h2>
+            <p class="section-sub">Fill in your details to become a registered blood donor.</p>
+            <form class="bbform" onsubmit="submitForm(event, this, 'Donor registered successfully!', '/api/donors')">
+                <div class="form-row">
+                    <div class="form-group"><label>Full Name</label><input type="text" name="name" placeholder="John Doe" required></div>
+                    <div class="form-group"><label>Gender</label><select name="gender" required><option value="">Select Gender</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Age</label><input type="number" name="age" placeholder="25" min="18" max="65" required></div>
+                    <div class="form-group"><label>Blood Group</label><select name="blood_group" required><option value="">Select Blood Group</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Contact Phone</label><input type="tel" name="phone" placeholder="+91 98765 43210" pattern="[0-9\+\-\s\(\)]+" required></div>
+                    <div class="form-group"><label>Last Donation Date</label><input type="date" name="last_donation_date"></div>
+                </div>
+                <div class="form-group full"><label>Address</label><textarea name="address" placeholder="Residential Address" rows="3" required></textarea></div>
+                <div class="form-group full"><label>Account Password</label><input type="password" name="password" placeholder="Create a password" required></div>
+                <p style="text-align:center; font-size:14px; margin-bottom:15px;">Already a donor? <a href="portal-login.html" style="color:var(--blood); font-weight:600;">Log In Here</a></p>
+                <button type="submit" class="btn-primary full-btn">Register as Donor</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- DONATION RECORD -->
+    <section id="donation-form" class="section dark-section form-section">
+        <div class="container narrow">
+            <div class="section-label">Record</div>
+            <h2>Add Donation Record</h2>
+            <p class="section-sub">Record a new donation event (for staff use).</p>
+            <form class="bbform" onsubmit="submitForm(event, this, 'Donation record added!', '/api/donations')">
+                <div class="form-row">
+                    <div class="form-group"><label>Donor ID</label><input type="text" name="donor_id" placeholder="DON-0001" required></div>
+                    <div class="form-group"><label>Staff ID</label><input type="text" name="staff_id" placeholder="STF-0001" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Units Donated (ml)</label><input type="number" name="units" placeholder="450" min="100" max="500" required></div>
+                    <div class="form-group"><label>Donation Date</label><input type="date" name="donation_date" required></div>
+                </div>
+                <button type="submit" class="btn-primary full-btn">Save Donation Record</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- HOSPITAL REGISTRATION -->
+    <section id="hospital-form" class="section form-section">
+        <div class="container narrow">
+            <div class="section-label">Hospital</div>
+            <h2>Register Hospital</h2>
+            <p class="section-sub">Add a new hospital to the network.</p>
+            <form class="bbform" onsubmit="submitForm(event, this, 'Hospital registered successfully!', '/api/hospitals')">
+                <div class="form-row">
+                    <div class="form-group"><label>Hospital Name</label><input type="text" name="name" placeholder="City General Hospital" required></div>
+                    <div class="form-group"><label>Location / City</label><input type="text" name="location" placeholder="Chennai, Tamil Nadu" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Contact Email</label><input type="email" name="email" placeholder="hosp@email.com" required></div>
+                    <div class="form-group"><label>Contact Phone</label><input type="tel" name="phone" placeholder="+91 98765 43210" pattern="[0-9\+\-\s\(\)]+" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Account Password</label><input type="password" name="password" placeholder="Create a password" required></div>
+                    <div class="form-group" style="visibility:hidden;"><input type="text"></div>
+                </div>
+                <p style="text-align:center; font-size:14px; margin-bottom:15px;">Already registered? <a href="portal-login.html" style="color:white; font-weight:600; text-decoration: underline;">Log In Here</a></p>
+                <button type="submit" class="btn-primary full-btn" style="background: white; color: var(--blood);">Register Hospital</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- BLOOD REQUEST -->
+    <section id="request-form" class="section dark-section form-section">
+        <div class="container narrow">
+            <div class="section-label">Request</div>
+            <h2>Request Blood</h2>
+            <p class="section-sub">Hospitals can raise blood requests here.</p>
+            <form class="bbform" onsubmit="submitForm(event, this, 'Blood request submitted!', '/api/requests')">
+                <div class="form-row">
+                    <div class="form-group"><label>Hospital ID</label><input type="number" name="hospital_id" placeholder="1" min="1" required></div>
+                    <div class="form-group"><label>Blood Group Required</label><select name="blood_group" required><option value="">Select Blood Group</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Units Required</label><input type="number" name="units" placeholder="2" min="1" required></div>
+                    <div class="form-group"><label>Request Date</label><input type="date" name="request_date" required></div>
+                </div>
+                <div class="form-group full"><label>Status</label><select name="status" required><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Fulfilled">Fulfilled</option><option value="Rejected">Rejected</option></select></div>
+                <button type="submit" class="btn-primary full-btn">Submit Request</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- STAFF -->
+    <section id="staff-form" class="section dark-section form-section">
+        <div class="container narrow">
+            <div class="section-label">Staff</div>
+            <h2>Staff Registration</h2>
+            <p class="section-sub">Register blood bank staff members.</p>
+            <form class="bbform" onsubmit="submitForm(event, this, 'Staff member registered!', '/api/staff')">
+                <div class="form-row">
+                    <div class="form-group"><label>Full Name</label><input type="text" name="name" placeholder="Dr. Anita Sharma" required></div>
+                    <div class="form-group"><label>Role</label><select name="role" required><option value="">Select Role</option><option>Lab Technician</option><option>Blood Bank Manager</option><option>Nurse</option><option>Doctor</option><option>Admin</option></select></div>
+                </div>
+                <div class="form-group full"><label>Phone Number</label><input type="tel" name="phone" placeholder="+91 9876543210" pattern="[0-9\+\-\s]+" required></div>
+                <button type="submit" class="btn-primary full-btn">Register Staff</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section form-section">
+        <div class="container narrow">
+            <div class="section-label">Contact</div>
+            <h2>Contact Us</h2>
+            <p class="section-sub">Reach out to our support team for help or inquiries.</p>
+            <form class="bbform" onsubmit="submitForm(event, this, 'Message sent successfully!', '/api/contact')">
+                <div class="form-row">
+                    <div class="form-group"><label>Your Name</label><input type="text" name="name" placeholder="John Doe" required></div>
+                    <div class="form-group"><label>Email</label><input type="email" name="email" placeholder="you@email.com" required></div>
+                </div>
+                <div class="form-group full"><label>Message</label><textarea name="message" placeholder="Write your message here..." rows="5" required></textarea></div>
+                <button type="submit" class="btn-primary full-btn">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-logo">🩸 BloodCare</div>
+            <p>Connecting donors, hospitals, and blood banks for a healthier world.</p>
+            <div class="footer-links">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#donor-form">Donate</a>
+                <a href="#request-form">Request</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="footer-contact-fast">
+                <p onclick="copyToClipboard('1800-123-4567')" style="cursor: pointer; color: white; opacity: 0.8;" title="Click to copy">📞 1800-123-4567</p>
+                <p onclick="copyToClipboard('help@bloodcare.org')" style="cursor: pointer; color: white; opacity: 0.8; margin-top: 5px;" title="Click to copy">✉️ help@bloodcare.org</p>
+            </div>
+            <small style="margin-top: 15px; display: block;">© 2026 BloodCare. All rights reserved.</small>
+        </div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+
+    <div id="donorModal" class="modal-overlay" onclick="closeModalOutside(event)">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('donorModal')">✕</button>
+            <h3>Quick Donor Registration</h3>
+            <form class="bbform" onsubmit="submitForm(event, this, 'Donor registered!', '/api/donors'); closeModal('donorModal')">
+                <div class="form-group full"><label>Full Name</label><input type="text" name="name" placeholder="Your Name" required></div>
+                <div class="form-group full"><label>Blood Group</label><select name="blood_group" required><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+                <div class="form-group full"><label>Gender</label><select name="gender" required><option value="">Select Gender</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+                <div class="form-group full"><label>Phone</label><input type="tel" name="phone" placeholder="+91 98765 43210" pattern="[0-9\+\-\s\(\)]+" required></div>
+                <div class="form-group full"><label>Password</label><input type="password" name="password" placeholder="Create a password" required></div>
+                <button type="submit" class="btn-primary full-btn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <button id="scrollTopBtn" class="scroll-top" title="Go to top">↑</button>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

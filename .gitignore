@@ -1,0 +1,5 @@
+node_modules/
+.env
+BloodCare-Final.zip
+.DS_Store
+*.log
